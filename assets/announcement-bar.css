@@ -1,0 +1,194 @@
+.button--announcement > svg {
+  width: 1.2rem;
+  transition: var(--transition);
+}
+.button--announcement.show--dropdown > svg {
+  transform: rotate(180deg);
+}
+.button--announcement > span {
+  flex-shrink: 0;
+}
+.announcement__wrapper {
+  padding: 0.5rem 0 0;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  color: rgb(var(--color-foreground));
+}
+.announcement-collapsible-content {
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+}
+.announment--bar-social-media .list-social__link {
+  color: currentColor !important;
+}
+.announment--bar-social-media .list-social__link {
+  padding: 0.2rem;
+}
+.announment--bar-social-media .list-social__link + .list-social__link {
+  margin-left: 0.4rem;
+}
+.announcement-bar-innner {
+  padding-bottom: 0.5rem;
+}
+.announment--bar-social-media {
+  align-items: center;
+  height: 100%;
+}
+@media only screen and (min-width: 992px) {
+  .announcement-bar-innner {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+  .announcement-bar-innner--has-social.announcement-bar-innner--has-localization {
+    grid-template-columns: 25% 50% 25%;
+  }
+  .announcement-bar-innner--has-social:not(.announcement-bar-innner--has-localization) {
+    grid-template-columns: auto 1fr;
+  }
+  .announcement-bar-innner--has-localization:not(.announcement-bar-innner--has-social) {
+    grid-template-columns: 1fr auto;
+  }
+}
+.arrow__link--button > svg {
+  height: auto;
+  width: 2rem;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+.announcment--link-button {
+  display: inline-flex;
+  align-items: center;
+}
+.announcment--link-button .arrow__link--button {
+  line-height: 1;
+}
+@media only screen and (max-width: 991px) {
+  .button--announcement > svg {
+    width: 1.5rem;
+    margin-left: 0;
+  }
+  .button--announcement {
+    padding: 0.6rem;
+    width: 3rem;
+    height: 3rem;
+  }
+}
+/* New css  */
+.announcement-bar--content {
+  text-align: center;
+}
+
+.announcement-bar__message {
+  font-size: var(--announcement-font-size-mobile, 1.1rem);
+}
+
+@media only screen and (min-width: 750px) {
+  .announcement-bar__message {
+    font-size: var(--announcement-font-size-tablet, 1.2rem);
+  }
+}
+
+@media only screen and (min-width: 990px) {
+  .announcement-bar__message {
+    font-size: var(--announcement-font-size-desktop, 1.2rem);
+  }
+}
+
+.announcement-bar--continuous {
+  justify-content: flex-start !important;
+  overflow: hidden;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.announcement-marquee {
+  width: 100%;
+  overflow: hidden;
+}
+
+.announcement-marquee__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  min-width: 100%;
+  animation: announcement-marquee-scroll var(--announcement-marquee-duration, 30s) linear infinite;
+  will-change: transform;
+}
+
+.announcement-marquee:hover .announcement-marquee__track {
+  animation-play-state: paused;
+}
+
+.announcement-marquee__item {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: clamp(2.4rem, 4vw, 8rem);
+  padding: 0 0 0 clamp(2.4rem, 4vw, 8rem);
+  white-space: nowrap;
+}
+
+.announcement-bar--continuous .announcement-bar__message {
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.announcement-marquee__separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: var(--announcement-separator-color, currentColor);
+  line-height: 1;
+}
+
+.announcement-marquee__separator--diamond {
+  width: 0.8rem;
+  height: 0.8rem;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+.announcement-marquee__separator--dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  background: currentColor;
+  border-radius: 999px;
+}
+
+.announcement-marquee__separator--line {
+  width: 2.4rem;
+  height: 0.1rem;
+  background: currentColor;
+}
+
+.announcement-marquee__separator--custom {
+  font-size: 1.2rem;
+}
+
+@keyframes announcement-marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.announcement--navigation {
+  color: rgba(var(--color-foreground), 0.75);
+  transition: var(--transition);
+}
+.announcement--navigation:hover {
+  color: rgba(var(--color-foreground));
+  transform: scale(1.05);
+}
+.swiper-button-next.announcement--navigation {
+  right: -1rem;
+}
+
+.swiper-button-prev.announcement--navigation {
+  left: -1rem;
+}

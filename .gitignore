@@ -1,0 +1,17 @@
+# Claude AI workflow files
+CLAUDE.md
+.agents/
+
+# Output artifacts (JSON + images generated from Google Docs)
+OUTPUT/
+
+# Root-level JSON files
+*.json
+
+# Theme zip archive
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

@@ -1,0 +1,348 @@
+{% stylesheet %}
+  .collection-card-block {
+    min-width: 0;
+    max-width: 100%;
+    width: var(--cc-width, 100%);
+    padding-top: var(--cc-pad-top, 0);
+    padding-bottom: var(--cc-pad-bottom, 0);
+    padding-left: var(--cc-pad-left, 0);
+    padding-right: var(--cc-pad-right, 0);
+  }
+
+  @media screen and (max-width: 749px) {
+    .collection-card-block {
+      width: var(--cc-width-mobile, var(--cc-width, 100%));
+      padding-top: calc(var(--cc-pad-top, 0) * var(--cc-mobile-scale, 1));
+      padding-bottom: calc(var(--cc-pad-bottom, 0) * var(--cc-mobile-scale, 1));
+      padding-left: calc(var(--cc-pad-left, 0) * var(--cc-mobile-scale, 1));
+      padding-right: calc(var(--cc-pad-right, 0) * var(--cc-mobile-scale, 1));
+    }
+  }
+{% endstylesheet %}
+
+{%- liquid
+  assign s = block.settings
+
+  case s.width
+    when 'fill'
+      assign width_value = '100%'
+    when 'custom'
+      assign width_value = s.custom_width | append: '%'
+    else
+      assign width_value = 'fit-content'
+  endcase
+
+  case s.width_mobile
+    when 'fill'
+      assign width_mobile_value = '100%'
+    when 'custom'
+      assign width_mobile_value = s.custom_width_mobile | append: '%'
+    else
+      assign width_mobile_value = 'fit-content'
+  endcase
+
+  assign container_width = settings.container_lg_width | default: 1200
+  case s.width
+    when 'fill'
+      assign sizes = '(min-width: ' | append: container_width | append: 'px) ' | append: container_width | append: 'px, 100vw'
+    when 'custom'
+      assign custom_fraction = s.custom_width | divided_by: 100.0
+      assign approx_px = container_width | times: custom_fraction | round
+      assign sizes = '(min-width: ' | append: container_width | append: 'px) ' | append: approx_px | append: 'px, ' | append: s.custom_width | append: 'vw'
+    else
+      assign sizes = '(min-width: ' | append: container_width | append: 'px) calc(' | append: container_width | append: 'px / 4), (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)'
+  endcase
+-%}
+
+{{ 'section-collection-list.css' | asset_url | stylesheet_tag }}
+
+{%- if s.user_hover -%}
+  {%- style -%}
+    .collection-card-block--{{ block.id }} .collection--card-wrapper:hover {
+      --color-background: {{ s.hover_background.rgba }};
+      --color-foreground: {{ s.hover_foreground.rgba }};
+    }
+    .collection-card-block--{{ block.id }} .collection--card-wrapper {
+      transition: var(--transition);
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
+<div
+  class="collection-card-block collection-card-block--{{ block.id }}"
+  style="
+    --cc-width: {{ width_value }};
+    --cc-width-mobile: {{ width_mobile_value }};
+    --cc-pad-top: {{ s.padding_top }}px;
+    --cc-pad-bottom: {{ s.padding_bottom }}px;
+    --cc-pad-left: {{ s.padding_left }}px;
+    --cc-pad-right: {{ s.padding_right }}px;
+    --cc-mobile-scale: {{ s.mobile_scale | divided_by: 100.0 }};
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="product__items collection--card-wrapper collection-card--alignment-{{ s.card_alignment }}{% if s.round_corner %} collection-card-radius{% endif %}{% if s.show_shadow %} collection--shadow-on-hover{% endif %} color-{{ s.color_scheme }}">
+    <div class="product__items--thumbnail">
+      {%- render 'collection-card',
+        image: s.custom_image,
+        collection: s.collection,
+        media_aspect_ratio: s.image_ratio,
+        show_icon: s.show_icon,
+        show_product_items: s.show_product_items,
+        image_width: s.image_width,
+        transparent_media: s.transparent_media,
+        image_as_icon: s.image_as_icon,
+        title_size: s.collection_title_size,
+        content_on_container: s.content_on_container,
+        inner_padded: s.card_padding_type,
+        card_alignment: s.card_alignment,
+        sizes: sizes
+      -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collection card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "custom_image",
+      "label": "Custom image",
+      "info": "Overrides the collection image."
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "adapt",    "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait (2:3)" },
+        { "value": "square",   "label": "Square (1:1)" },
+        { "value": "circle",   "label": "Circle" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "image_width",
+      "label": "Image width",
+      "options": [
+        { "value": "third", "label": "Small" },
+        { "value": "half",  "label": "Medium" },
+        { "value": "four",  "label": "Large" },
+        { "value": "full",  "label": "Full width" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "checkbox",
+      "id": "image_as_icon",
+      "label": "Image as icon",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_media",
+      "label": "Enable transparent image",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "card_alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "collection_title_size",
+      "label": "Title size",
+      "options": [
+        { "value": "hxl2", "label": "Heading XL2" },
+        { "value": "hxl",  "label": "Heading XL" },
+        { "value": "h0",   "label": "Heading 0 (Display)" },
+        { "value": "h1",   "label": "Heading 1" },
+        { "value": "h2",   "label": "Heading 2" },
+        { "value": "h3",   "label": "Heading 3" },
+        { "value": "h4",   "label": "Heading 4" },
+        { "value": "h5",   "label": "Heading 5" },
+        { "value": "h6",   "label": "Heading 6" }
+      ],
+      "default": "h5"
+    },
+    {
+      "type": "checkbox",
+      "id": "round_corner",
+      "label": "Round corners",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show shadow on hover",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "content_on_container",
+      "label": "Content over image",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "card_padding_type",
+      "label": "Inner padding",
+      "options": [
+        { "value": "none",         "label": "None" },
+        { "value": "extra--small", "label": "Extra small" },
+        { "value": "small",        "label": "Small" },
+        { "value": "medium",       "label": "Medium" },
+        { "value": "large",        "label": "Large" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_items",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show icon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Hover effect"
+    },
+    {
+      "type": "checkbox",
+      "id": "user_hover",
+      "label": "Enable hover effect",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "hover_background",
+      "label": "Background color on hover",
+      "default": "#001F3F",
+      "visible_if": "{{ block.settings.user_hover }}"
+    },
+    {
+      "type": "color",
+      "id": "hover_foreground",
+      "label": "Foreground color on hover",
+      "default": "#FFFFFF",
+      "visible_if": "{{ block.settings.user_hover }}"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width (desktop)",
+      "options": [
+        { "value": "fit-content", "label": "Fit content" },
+        { "value": "fill",        "label": "Fill" },
+        { "value": "custom",      "label": "Custom" }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "Custom width",
+      "min": 0, "max": 100, "step": 1, "unit": "%", "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "Width (mobile)",
+      "options": [
+        { "value": "fit-content", "label": "Fit content" },
+        { "value": "fill",        "label": "Fill" },
+        { "value": "custom",      "label": "Custom" }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "Custom width",
+      "min": 0, "max": 100, "step": 1, "unit": "%", "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left",
+      "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right",
+      "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_scale",
+      "label": "Mobile scale",
+      "min": 50, "max": 100, "step": 5, "unit": "%", "default": 100
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection card",
+      "category": "Collections"
+    }
+  ]
+}
+{% endschema %}

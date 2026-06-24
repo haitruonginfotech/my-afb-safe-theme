@@ -1,0 +1,26 @@
+{% if settings.border_style != 'none' and settings.border_style != blank %}
+--border-style: {{ settings.border_style }};
+--border-width: {{ settings.border_thickness | default: settings.border_width | default: 1 }}px;
+--border-opacity: {{ settings.border_opacity | divided_by: 100.0 }};
+{% else %}
+--border-style: none;
+--border-width: 0;
+{% endif %}
+--border-radius: {{ settings.corner_radius | default: settings.border_radius | default: 0 }}px;
+--pad-block-start: {{ settings['padding-block-start'] | default: settings.padding_top | default: 0 }}px;
+--pad-block-end: {{ settings['padding-block-end'] | default: settings.padding_bottom | default: 0 }}px;
+--pad-inline-start: {{ settings['padding-inline-start'] | default: settings.padding_left | default: 0 }}px;
+--pad-inline-end: {{ settings['padding-inline-end'] | default: settings.padding_right | default: 0 }}px;
+{% if settings.mobile_scale != blank %}
+--pad-mobile-scale: {{ settings.mobile_scale | divided_by: 100.0 }};
+{% endif %}
+
+{% stylesheet %}
+  .has-border {
+    border-style: var(--border-style, none);
+    border-width: var(--border-width, 0);
+    border-color: rgba(var(--color-foreground), var(--border-opacity, 1));
+    border-radius: var(--border-radius, 0);
+    overflow: hidden;
+  }
+{% endstylesheet %}

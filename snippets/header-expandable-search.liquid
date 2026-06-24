@@ -1,0 +1,35 @@
+<div class="header-expand-search {{ className }}">
+  <button
+    type="button"
+    class="header__actions_btn header__actions_btn--search-expand"
+    aria-label="{{ 'general.search.search' | t }}"
+    aria-expanded="false"
+  >
+    {% render 'icon-search' %}
+  </button>
+  <form
+    action="{{ routes.search_url }}"
+    method="get"
+    role="search"
+    class="header-expand-search__form search--bar-color-scheme"
+  >
+    <label class="visually-hidden" for="{{ search_id }}">{{ 'general.search.search' | t }}</label>
+    <input
+      id="{{ search_id }}"
+      class="header-expand-search__input"
+      type="search"
+      name="q"
+      value=""
+      placeholder="{{ 'general.search.search' | t }}"
+      autocomplete="off"
+    >
+    <input type="hidden" name="options[prefix]" value="last">
+    <button
+      class="header-expand-search__submit"
+      type="submit"
+      aria-label="{{ 'general.search.search' | t }}"
+    >
+      {% render 'icon-search' %}
+    </button>
+  </form>
+</div>

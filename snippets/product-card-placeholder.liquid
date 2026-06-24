@@ -1,0 +1,26 @@
+{% comment %}
+  Renders a product card placeholder
+
+  Usage:
+  {% render 'product-card-placeholder' %}
+{% endcomment %}
+{%- liquid
+  case image_ratio
+    when 'portrait'
+      assign placeholder_padding = '125%'
+    when 'landscape'
+      assign placeholder_padding = '66.6%'
+    else
+      assign placeholder_padding = '100%'
+  endcase
+-%}
+<div class="{{ productItem }}">
+  <div
+    class="mb-15 placeholder placeholder_svg_parent card--client-height {% if corner_radius %}product--corner-radius-true{% endif %}"
+    style="padding-bottom: {{ placeholder_padding }}"
+  >
+    {{ product_item | placeholder_svg_tag: 'placeholder-svg-new' }}
+  </div>
+  <div class="h4">Product Title</div>
+  <span class="h6">$99.99</span>
+</div>

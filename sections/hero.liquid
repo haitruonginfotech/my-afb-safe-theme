@@ -1,0 +1,805 @@
+<link rel="stylesheet" href="{{ 'component-rte.css' | asset_url }}" media="print" onload="this.media='all'">
+{{ 'section-hero.css' | asset_url | stylesheet_tag }}
+<noscript>{{ 'component-rte.css' | asset_url | stylesheet_tag }}</noscript>
+
+{%- liquid
+  assign hero_background_gradient = section.settings.section_background_gradient | replace: 'background-image:', '' | replace: 'background:', '' | remove: ';' | strip
+-%}
+
+{%- style -%}
+  .hero-bg-{{ section.id }} {
+    {% if section.settings.section_background_color != blank %}
+      background-color: {{ section.settings.section_background_color }};
+    {% endif %}
+    {% if hero_background_gradient != blank and section.settings.section_background_image != blank %}
+      background-image: {{ hero_background_gradient }}, url({{ section.settings.section_background_image | image_url: width: 2400 }});
+    {% elsif hero_background_gradient != blank %}
+      background-image: {{ hero_background_gradient }};
+    {% elsif section.settings.section_background_image != blank %}
+      background-image: url({{ section.settings.section_background_image | image_url: width: 2400 }});
+    {% endif %}
+  }
+
+  {% if section.settings.section_background_image_mobile != blank %}
+    @media screen and (max-width: 767px) {
+      .hero-bg-{{ section.id }} {
+        {% if hero_background_gradient != blank %}
+          background-image: {{ hero_background_gradient }}, url({{ section.settings.section_background_image_mobile | image_url: width: 1200 }});
+        {% else %}
+          background-image: url({{ section.settings.section_background_image_mobile | image_url: width: 1200 }});
+        {% endif %}
+      }
+    }
+  {% endif %}
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.mobile_padding_top }}px;
+    padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign container = 'container'
+  if section.settings.container == 'container-fluid'
+    assign container = 'container-fluid'
+  endif
+-%}
+
+<div class="hero-section hero-bg-{{ section.id }} section-{{ section.id }}-padding section--top-space-{{ section.id }} color-{{ section.settings.color_scheme }}">
+  <div class="{{ container }}">
+    <div class="hero-section__inner">
+      <div class="hero-section__content text-{{ section.settings.alignment }} mobile-text-{{ section.settings.mobile_alignment }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'heading' -%}
+              {%- assign heading_tag = block.settings.heading_tag | default: 'h1' -%}
+              {%- if block.settings.heading != blank -%}
+                <{{ heading_tag }}
+                  class="hero-section__heading"
+                  style="--hero-block-width: {{ block.settings.content_width }}px;{% if block.settings.text_color != blank %} --hero-block-color: {{ block.settings.text_color }};{% endif %}"
+                  {{ block.shopify_attributes }}
+                >
+                  {{ block.settings.heading | replace: 'p>', 'span>' }}
+                </{{ heading_tag }}>
+              {%- endif -%}
+
+            {%- when 'text' -%}
+              {%- if block.settings.text != blank -%}
+                <div
+                  class="hero-section__text rte"
+                  style="--hero-block-width: {{ block.settings.content_width }}px;{% if block.settings.text_color != blank %} --hero-block-color: {{ block.settings.text_color }};{% endif %}"
+                  {{ block.shopify_attributes }}
+                >
+                  {{ block.settings.text }}
+                </div>
+              {%- endif -%}
+
+            {%- when 'image' -%}
+              {%- if block.settings.image != blank -%}
+                <div
+                  class="hero-section__image"
+                  style="--hero-image-width: {{ block.settings.image_width }}px;"
+                  {{ block.shopify_attributes }}
+                >
+                  {%- assign image_width_2x = block.settings.image_width | times: 2 -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: image_width_2x
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '165, 360, 535, 750, 900, 1100, 1400, 1600',
+                      sizes: '(min-width: 750px) var(--hero-image-width), 100vw'
+                  }}
+                </div>
+              {%- endif -%}
+
+            {%- when 'icon_text' -%}
+              <div
+                class="hero-section__icon-list"
+                style="
+                  --hero-icon-size: {{ block.settings.icon_size }}px;
+                  --hero-icon-text-align: {{ block.settings.text_alignment }};
+                  {% if block.settings.text_color != blank %}
+                    --hero-icon-text-color: {{ block.settings.text_color }};
+                  {% endif %}
+                  --hero-icon-columns-desktop: {{ block.settings.columns_desktop }};
+                  --hero-icon-columns-tablet: {{ block.settings.columns_tablet }};
+                  --hero-icon-columns-mobile: {{ block.settings.columns_mobile }};
+                "
+                {{ block.shopify_attributes }}
+              >
+                <div class="hero-section__icon-list-inner">
+                  {%- for i in (1..6) -%}
+                    {%- liquid
+                      assign icon_svg_key = 'icon_svg_' | append: i
+                      assign icon_image_key = 'icon_image_' | append: i
+                      assign text_key = 'text_' | append: i
+                      assign icon_svg = block.settings[icon_svg_key]
+                      assign icon_image = block.settings[icon_image_key]
+                      assign text = block.settings[text_key]
+                    -%}
+                    {%- if icon_svg != blank or icon_image != blank or text != blank -%}
+                      <div class="hero-section__icon-text">
+                        {%- if icon_image != blank or icon_svg != blank -%}
+                          <span class="hero-section__icon">
+                            {%- if icon_image != blank -%}
+                              <img
+                                src="{{ icon_image | image_url: width: 120 }}"
+                                alt="{{ icon_image.alt | escape }}"
+                                width="60"
+                                height="{{ 60 | divided_by: icon_image.aspect_ratio | ceil }}"
+                                loading="lazy"
+                              >
+                            {%- else -%}
+                              {{ icon_svg }}
+                            {%- endif -%}
+                          </span>
+                        {%- endif -%}
+                        {%- if text != blank -%}
+                          <p class="hero-section__icon-label">{{ text }}</p>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+
+            {%- when 'button' -%}
+              {%- if block.settings.button_label != blank -%}
+                {%- liquid
+                  assign button_action = block.settings.button_action | default: 'link'
+                  assign button_class = 'button button--primary'
+                  if block.settings.button_style == 'secondary'
+                    assign button_class = 'button button--secondary'
+                  elsif block.settings.button_style == 'link'
+                    assign button_class = 'link'
+                  endif
+                -%}
+                <div class="hero-section__buttons" {{ block.shopify_attributes }}>
+                  <a
+                    {% if button_action == 'scroll_add_to_cart' %}
+                      href="#product-form"
+                      data-hero-scroll-to-product-form="true"
+                    {% elsif block.settings.button_link == blank %}
+                      role="link" aria-disabled="true"
+                    {% else %}
+                      href="{{ block.settings.button_link }}"
+                    {% endif %}
+                    class="{{ button_class }}{% unless block.settings.button_style == 'link' %} button--{{ block.settings.button_size }}{% endunless %}{% if block.settings.button_icon %} button--with-icon{% endif %}"
+                  >
+                    {{ block.settings.button_label | escape }}
+                    {%- if block.settings.button_icon -%}
+                      <span class="button--icon button--icon-right">{% render 'icon-chevron-right' %}</span>
+                    {%- endif -%}
+                  </a>
+                </div>
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('click', function (event) {
+    const trigger = event.target.closest('[data-hero-scroll-to-product-form="true"]');
+    if (!trigger) return;
+
+    const target = document.querySelector('.product_buy_button_form, product-form.product-form, form[id^="product-form-"]:not(#product-form-installment), .product-form__buttons');
+    if (!target) return;
+
+    event.preventDefault();
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Page width",
+      "default": "container",
+      "options": [
+        {
+          "value": "container",
+          "label": "Boxed"
+        },
+        {
+          "value": "container-fluid",
+          "label": "Full width"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Desktop content alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Mobile content alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "background-1"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "textarea",
+      "id": "section_background_gradient",
+      "label": "Background gradient",
+      "info": "Example: linear-gradient(0deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.70) 100%)"
+    },
+    {
+      "type": "image_picker",
+      "id": "section_background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "section_background_image_mobile",
+      "label": "Background image mobile"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "paragraph",
+      "content": "Desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    },
+    {
+      "type": "paragraph",
+      "content": "Mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading text",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Hero heading"
+        },
+        {
+          "type": "select",
+          "id": "heading_tag",
+          "label": "Heading tag",
+          "options": [
+            {
+              "value": "h1",
+              "label": "H1"
+            },
+            {
+              "value": "h2",
+              "label": "H2"
+            },
+            {
+              "value": "h3",
+              "label": "H3"
+            },
+            {
+              "value": "h4",
+              "label": "H4"
+            },
+            {
+              "value": "h5",
+              "label": "H5"
+            },
+            {
+              "value": "h6",
+              "label": "H6"
+            },
+            {
+              "value": "div",
+              "label": "Div"
+            },
+            {
+              "value": "p",
+              "label": "P"
+            },
+            {
+              "value": "span",
+              "label": "Span"
+            }
+          ],
+          "default": "h1"
+        },
+        {
+          "type": "range",
+          "id": "content_width",
+          "min": 360,
+          "max": 1200,
+          "step": 20,
+          "unit": "px",
+          "label": "Content width",
+          "default": 720
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Add supporting text for this hero section.</p>"
+        },
+        {
+          "type": "range",
+          "id": "content_width",
+          "min": 360,
+          "max": 1200,
+          "step": 20,
+          "unit": "px",
+          "label": "Content width",
+          "default": 720
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color"
+        }
+      ]
+    },
+    {
+      "type": "icon_text",
+      "name": "Icon text",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "icon_size",
+          "min": 12,
+          "max": 80,
+          "step": 1,
+          "unit": "px",
+          "label": "Icon size",
+          "default": 24
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Text alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color"
+        },
+        {
+          "type": "select",
+          "id": "columns_desktop",
+          "label": "Columns on desktop",
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "5",
+              "label": "5"
+            },
+            {
+              "value": "6",
+              "label": "6"
+            }
+          ],
+          "default": "4"
+        },
+        {
+          "type": "select",
+          "id": "columns_tablet",
+          "label": "Columns on tablet",
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            }
+          ],
+          "default": "2"
+        },
+        {
+          "type": "select",
+          "id": "columns_mobile",
+          "label": "Columns on mobile",
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            }
+          ],
+          "default": "1"
+        },
+        {
+          "type": "header",
+          "content": "Item 1"
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg_1",
+          "label": "SVG icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image_1",
+          "label": "Image icon"
+        },
+        {
+          "type": "text",
+          "id": "text_1",
+          "label": "Text",
+          "default": "Icon text"
+        },
+        {
+          "type": "header",
+          "content": "Item 2"
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg_2",
+          "label": "SVG icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image_2",
+          "label": "Image icon"
+        },
+        {
+          "type": "text",
+          "id": "text_2",
+          "label": "Text",
+          "default": "Icon text"
+        },
+        {
+          "type": "header",
+          "content": "Item 3"
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg_3",
+          "label": "SVG icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image_3",
+          "label": "Image icon"
+        },
+        {
+          "type": "text",
+          "id": "text_3",
+          "label": "Text",
+          "default": "Icon text"
+        },
+        {
+          "type": "header",
+          "content": "Item 4"
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg_4",
+          "label": "SVG icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image_4",
+          "label": "Image icon"
+        },
+        {
+          "type": "text",
+          "id": "text_4",
+          "label": "Text",
+          "default": "Icon text"
+        },
+        {
+          "type": "header",
+          "content": "Item 5"
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg_5",
+          "label": "SVG icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image_5",
+          "label": "Image icon"
+        },
+        {
+          "type": "text",
+          "id": "text_5",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Item 6"
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg_6",
+          "label": "SVG icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image_6",
+          "label": "Image icon"
+        },
+        {
+          "type": "text",
+          "id": "text_6",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "range",
+          "id": "image_width",
+          "min": 120,
+          "max": 1600,
+          "step": 20,
+          "unit": "px",
+          "label": "Image width",
+          "default": 720
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop now"
+        },
+        {
+          "type": "select",
+          "id": "button_action",
+          "label": "Button action",
+          "options": [
+            {
+              "value": "link",
+              "label": "Open link"
+            },
+            {
+              "value": "scroll_add_to_cart",
+              "label": "Scroll to add to cart form"
+            }
+          ],
+          "default": "link"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button style",
+          "options": [
+            {
+              "value": "primary",
+              "label": "Primary"
+            },
+            {
+              "value": "secondary",
+              "label": "Secondary"
+            },
+            {
+              "value": "link",
+              "label": "Link"
+            }
+          ],
+          "default": "primary"
+        },
+        {
+          "type": "select",
+          "id": "button_size",
+          "label": "Button size",
+          "options": [
+            {
+              "value": "small",
+              "label": "Small"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "large",
+              "label": "Large"
+            }
+          ],
+          "default": "medium"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_icon",
+          "label": "Show button icon",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "icon_text"
+        },
+        {
+          "type": "button"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,646 @@
+{{ 'component-modal-video.css' | asset_url | stylesheet_tag }}
+{{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign video_id = section.settings.video.id | default: section.settings.video_url.id
+  assign poster = section.settings.cover_image | default: section.settings.video.preview_image
+  assign video_alt = section.settings.video.alt | default: section.settings.video_description | default: section.settings.heading
+  assign alt = 'sections.video.load_video' | t: description: video_alt | escape
+  assign has_video = false
+  if section.settings.video != blank or section.settings.video_url != blank
+    assign has_video = true
+  endif
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.mobile_padding_top }}px;
+    padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+  }
+
+  .section-{{ section.id }} {
+    background: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+  }
+
+  .section-{{ section.id }} .product-catalogue-video__eyebrow,
+  .section-{{ section.id }} .product-catalogue-video__accent,
+  .section-{{ section.id }} .product-catalogue-video__meta,
+  .section-{{ section.id }} .product-catalogue-video__search-label {
+    color: {{ section.settings.accent_color }};
+  }
+
+  .section-{{ section.id }} .product-catalogue-video__media {
+    min-height: {{ section.settings.mobile_media_height }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+
+    .section-{{ section.id }} .product-catalogue-video__media {
+      min-height: {{ section.settings.media_height }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section class="section-{{ section.id }} product-catalogue-video section-{{ section.id }}-padding">
+  <div class="{{ section.settings.container }}{% unless section.settings.show_offset %} p-0{% endunless %}">
+    <div class="product-catalogue-video__intro">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="product-catalogue-video__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="product-catalogue-video__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.text != blank -%}
+        <div class="product-catalogue-video__text rte">{{ section.settings.text }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="product-catalogue-video__frame">
+      <modal-opener class="product-catalogue-video__opener no-js-hidden" {% if has_video %}data-modal="#PopupModal-{{ section.id }}"{% endif %}>
+        <button
+          class="product-catalogue-video__poster"
+          type="button"
+          aria-label="{{ alt }}"
+          {% if has_video %}aria-haspopup="dialog"{% endif %}
+          {% unless has_video %}aria-disabled="true"{% endunless %}
+          {% unless has_video %}disabled{% endunless %}
+          data-media-id="{{ video_id }}"
+        >
+          <span class="product-catalogue-video__media">
+            {%- if poster != blank -%}
+              {{
+                poster
+                | image_url: width: 2400
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '375, 550, 750, 990, 1200, 1500, 1800, 2200, 2400',
+                  sizes: '(min-width: 1200px) 1200px, 100vw',
+                  class: 'product-catalogue-video__image',
+                  alt: poster.alt
+              }}
+            {%- else -%}
+              {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg product-catalogue-video__placeholder' }}
+            {%- endif -%}
+          </span>
+
+          <span class="product-catalogue-video__shade" aria-hidden="true"></span>
+
+          {%- if section.settings.logo != blank -%}
+            <span class="product-catalogue-video__logo-wrap">
+              {{
+                section.settings.logo
+                | image_url: width: 220
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '90, 140, 180, 220',
+                  class: 'product-catalogue-video__logo',
+                  alt: section.settings.logo.alt
+              }}
+            </span>
+          {%- endif -%}
+
+          {%- if has_video -%}
+            <span class="product-catalogue-video__play" aria-hidden="true">
+              <span class="product-catalogue-video__play-icon"></span>
+            </span>
+          {%- endif -%}
+
+          <span class="product-catalogue-video__collection">
+            {%- if section.settings.meta_label != blank -%}
+              <span class="product-catalogue-video__meta">{{ section.settings.meta_label | escape }}</span>
+            {%- endif -%}
+            {%- if section.settings.catalogue_title != blank -%}
+              <span class="product-catalogue-video__catalogue-title">{{ section.settings.catalogue_title | escape }}</span>
+            {%- endif -%}
+            {%- if section.settings.collection_title != blank -%}
+              <span class="product-catalogue-video__accent">{{ section.settings.collection_title | escape }}</span>
+            {%- endif -%}
+          </span>
+
+          {%- if section.settings.search_label != blank or section.settings.search_text != blank -%}
+            <span class="product-catalogue-video__search">
+              {%- if section.settings.search_label != blank -%}
+                <span class="product-catalogue-video__search-label">{{ section.settings.search_label | escape }}</span>
+              {%- endif -%}
+              {%- if section.settings.search_text != blank -%}
+                <span class="product-catalogue-video__search-text">{{ section.settings.search_text | escape }}</span>
+              {%- endif -%}
+              <span class="product-catalogue-video__search-icon" aria-hidden="true"></span>
+            </span>
+          {%- endif -%}
+        </button>
+      </modal-opener>
+
+      <noscript>
+        {%- if section.settings.video_url != blank -%}
+          <a class="product-catalogue-video__poster" href="{{ section.settings.video_url }}">
+            <span class="product-catalogue-video__media">
+              {%- if poster != blank -%}
+                {{ poster | image_url: width: 1500 | image_tag: loading: 'lazy', class: 'product-catalogue-video__image', alt: poster.alt }}
+              {%- else -%}
+                {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg product-catalogue-video__placeholder' }}
+              {%- endif -%}
+            </span>
+          </a>
+        {%- endif -%}
+      </noscript>
+
+      {%- if has_video -%}
+        <modal-dialog id="PopupModal-{{ section.id }}" class="modal-video media-modal color-{{ settings.color_schemes | first }}">
+          <div class="modal-video__content" role="dialog" aria-label="{{ section.settings.video_description | escape }}" aria-modal="true" tabindex="-1">
+            <button id="ModalClose-{{ section.id }}" type="button" class="modal-video__toggle" aria-label="{{ 'accessibility.close' | t }}">
+              {% render 'icon-close' %}
+            </button>
+            <div class="modal-video__content-info">
+              <deferred-media class="modal-video__video template-popup">
+                <template>
+                  {%- if section.settings.video_url.type == 'youtube' -%}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ video_id }}?enablejsapi=1"
+                      class="js-youtube"
+                      allow="autoplay; encrypted-media"
+                      allowfullscreen
+                      title="{{ section.settings.video_description | escape }}"
+                    ></iframe>
+                  {%- elsif section.settings.video_url.type == 'vimeo' -%}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ video_id }}"
+                      class="js-vimeo"
+                      allow="autoplay; encrypted-media"
+                      allowfullscreen
+                      title="{{ section.settings.video_description | escape }}"
+                    ></iframe>
+                  {%- elsif section.settings.video != blank -%}
+                    {{ section.settings.video | video_tag: image_size: '1600x', autoplay: true, controls: true, muted: false }}
+                  {%- endif -%}
+                </template>
+              </deferred-media>
+            </div>
+          </div>
+        </modal-dialog>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .product-catalogue-video {
+    overflow: hidden;
+  }
+
+  .product-catalogue-video__intro {
+    max-width: 720px;
+    padding: 0 0 28px;
+  }
+
+  .product-catalogue-video__eyebrow {
+    margin: 0 0 12px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+  }
+
+  .product-catalogue-video__heading {
+    margin: 0;
+    color: currentColor;
+    font-size: clamp(30px, 3vw, 46px);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .product-catalogue-video__text {
+    max-width: 580px;
+    margin-top: 14px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .product-catalogue-video__frame {
+    position: relative;
+    width: 100%;
+  }
+
+  .product-catalogue-video__opener {
+    display: block;
+  }
+
+  .product-catalogue-video__poster {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: inherit;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: #262421;
+    color: #fff;
+    text-align: left;
+    isolation: isolate;
+  }
+
+  .product-catalogue-video__poster[aria-disabled="true"] {
+    cursor: default;
+  }
+
+  .product-catalogue-video__poster:disabled {
+    cursor: default;
+  }
+
+  .product-catalogue-video__media {
+    display: block;
+    position: relative;
+    width: 100%;
+    background: #302d29;
+  }
+
+  .product-catalogue-video__image,
+  .product-catalogue-video__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+  }
+
+  .product-catalogue-video__shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.02) 48%, rgba(0, 0, 0, 0.58) 100%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.34) 0%, rgba(0, 0, 0, 0) 52%);
+    pointer-events: none;
+  }
+
+  .product-catalogue-video__logo-wrap {
+    position: absolute;
+    top: clamp(16px, 3vw, 36px);
+    left: clamp(18px, 5vw, 64px);
+    z-index: 2;
+    max-width: 96px;
+  }
+
+  .product-catalogue-video__logo {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .product-catalogue-video__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    width: 58px;
+    height: 58px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(31, 31, 31, 0.48);
+    color: #fff;
+    transform: translate(-50%, -50%);
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .product-catalogue-video__poster:hover .product-catalogue-video__play {
+    background: rgba(31, 31, 31, 0.68);
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+
+  .product-catalogue-video__play-icon {
+    width: 0;
+    height: 0;
+    margin-left: 4px;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 13px solid currentColor;
+  }
+
+  .product-catalogue-video__collection {
+    position: absolute;
+    left: clamp(20px, 5vw, 64px);
+    bottom: clamp(24px, 5vw, 64px);
+    z-index: 2;
+    display: grid;
+    gap: 2px;
+    max-width: min(420px, calc(100% - 40px));
+  }
+
+  .product-catalogue-video__meta {
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .product-catalogue-video__catalogue-title,
+  .product-catalogue-video__accent {
+    font-family: var(--heading-global-family, var(--font-heading-family));
+    font-size: clamp(28px, 3vw, 46px);
+    line-height: 0.98;
+    letter-spacing: 0;
+  }
+
+  .product-catalogue-video__accent {
+    font-style: italic;
+  }
+
+  .product-catalogue-video__search {
+    position: absolute;
+    right: clamp(20px, 5vw, 74px);
+    bottom: clamp(18px, 4vw, 38px);
+    z-index: 2;
+    display: inline-flex;
+    max-width: min(360px, calc(100% - 40px));
+    min-height: 28px;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 999px;
+    background: rgba(82, 76, 69, 0.58);
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .product-catalogue-video__search-label {
+    padding: 6px 10px 6px 12px;
+    background: rgba(238, 238, 238, 0.88);
+    color: #333;
+  }
+
+  .product-catalogue-video__search-text {
+    padding: 6px 10px;
+    color: #fff;
+  }
+
+  .product-catalogue-video__search-icon {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    margin-right: 10px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    color: #fff;
+    flex: 0 0 auto;
+  }
+
+  .product-catalogue-video__search-icon::after {
+    content: "";
+    position: absolute;
+    right: -4px;
+    bottom: -3px;
+    width: 6px;
+    height: 1.5px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-catalogue-video__intro {
+      padding: 0 15px 24px;
+    }
+
+    .product-catalogue-video__text {
+      font-size: 12px;
+    }
+
+    .product-catalogue-video__logo-wrap {
+      max-width: 70px;
+    }
+
+    .product-catalogue-video__play {
+      width: 48px;
+      height: 48px;
+    }
+
+    .product-catalogue-video__search {
+      right: auto;
+      left: 20px;
+      bottom: 16px;
+      max-width: calc(100% - 40px);
+    }
+
+    .product-catalogue-video__collection {
+      bottom: 64px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Product catalogue video",
+  "tag": "section",
+  "class": "spaced-section spaced-section--full-width",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Page width",
+      "default": "container",
+      "options": [
+        {
+          "value": "container",
+          "label": "Boxed"
+        },
+        {
+          "value": "container-fluid",
+          "label": "Full width"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_offset",
+      "label": "Enable side offset",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Product catalogue"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "See Every Safe Come to Life"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Explore our full collection through our exclusive product catalogue video and discover the craftsmanship, luxury finishing, and innovative features behind every My AFB Safe product.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "cover_image",
+      "label": "Poster image"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo overlay"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Shopify-hosted video"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "accept": ["youtube", "vimeo"],
+      "label": "External video URL"
+    },
+    {
+      "type": "text",
+      "id": "video_description",
+      "label": "Video description",
+      "default": "Product catalogue video"
+    },
+    {
+      "type": "text",
+      "id": "meta_label",
+      "label": "Bottom meta label",
+      "default": "My AFB Safe - Official Video"
+    },
+    {
+      "type": "text",
+      "id": "catalogue_title",
+      "label": "Catalogue title",
+      "default": "Product Catalogue"
+    },
+    {
+      "type": "text",
+      "id": "collection_title",
+      "label": "Collection title",
+      "default": "2026 Collection"
+    },
+    {
+      "type": "text",
+      "id": "search_label",
+      "label": "Search label",
+      "default": "AIFEIBAO"
+    },
+    {
+      "type": "text",
+      "id": "search_text",
+      "label": "Search text",
+      "default": "艾斐堡 - 高端智能保险柜"
+    },
+    {
+      "type": "range",
+      "id": "media_height",
+      "min": 360,
+      "max": 760,
+      "step": 20,
+      "unit": "px",
+      "label": "Desktop poster height",
+      "default": 620
+    },
+    {
+      "type": "range",
+      "id": "mobile_media_height",
+      "min": 280,
+      "max": 620,
+      "step": 20,
+      "unit": "px",
+      "label": "Mobile poster height",
+      "default": 440
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#1a1a19"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#b8a154"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "paragraph",
+      "content": "Desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 70
+    },
+    {
+      "type": "paragraph",
+      "content": "Mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 45
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 55
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product catalogue video",
+      "category": "Video"
+    }
+  ]
+}
+{% endschema %}

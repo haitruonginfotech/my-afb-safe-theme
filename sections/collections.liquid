@@ -1,0 +1,1101 @@
+{{ 'section-collections.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign container = 'container'
+  if section.settings.container == 'container-fluid'
+    assign container = 'container-fluid'
+  elsif section.settings.container == 'container-full'
+    assign container = 'container-fluid px-0'
+  endif
+
+  assign heading_tag = section.settings.heading_tag | default: 'h2'
+-%}
+
+{%- style -%}
+  .collections-showcase-{{ section.id }} {
+    --collections-section-bg: {{ section.settings.section_background_color }};
+    --collections-header-width: {{ section.settings.header_width }}px;
+    --collections-header-gap-desktop: {{ section.settings.header_gap_desktop }}px;
+    --collections-header-gap-mobile: {{ section.settings.header_gap_mobile }}px;
+    --collections-header-align: {{ section.settings.header_alignment }};
+    --collections-header-align-mobile: {{ section.settings.mobile_header_alignment }};
+    --collections-columns-desktop: {{ section.settings.columns_desktop }};
+    --collections-columns-tablet: {{ section.settings.columns_tablet }};
+    --collections-columns-mobile: {{ section.settings.columns_mobile }};
+    --collections-gap-desktop: {{ section.settings.gap_desktop }}px;
+    --collections-gap-tablet: {{ section.settings.gap_tablet }}px;
+    --collections-gap-mobile: {{ section.settings.gap_mobile }}px;
+    --collections-card-height-desktop: {{ section.settings.card_height_desktop }}px;
+    --collections-card-height-tablet: {{ section.settings.card_height_tablet }}px;
+    --collections-card-height-mobile: {{ section.settings.card_height_mobile }}px;
+    --collections-card-padding-desktop: {{ section.settings.card_padding_desktop }}px;
+    --collections-card-padding-mobile: {{ section.settings.card_padding_mobile }}px;
+    --collections-card-radius: {{ section.settings.card_radius }}px;
+    --collections-card-overlay: {{ section.settings.card_overlay_gradient }};
+
+    --collections-eyebrow-font-family: {{ section.settings.eyebrow_font_family }};
+    --collections-eyebrow-color: {{ section.settings.eyebrow_color }};
+    --collections-eyebrow-size-desktop: {{ section.settings.eyebrow_size_desktop }}px;
+    --collections-eyebrow-size-tablet: {{ section.settings.eyebrow_size_tablet }}px;
+    --collections-eyebrow-size-mobile: {{ section.settings.eyebrow_size_mobile }}px;
+    --collections-eyebrow-weight: {{ section.settings.eyebrow_font_weight }};
+    --collections-eyebrow-letter-spacing: {{ section.settings.eyebrow_letter_spacing }}em;
+    --collections-eyebrow-transform: {{ section.settings.eyebrow_text_transform }};
+
+    --collections-heading-font-family: {{ section.settings.heading_font_family }};
+    --collections-heading-color: {{ section.settings.heading_color }};
+    --collections-heading-size-desktop: {{ section.settings.heading_size_desktop }}px;
+    --collections-heading-size-tablet: {{ section.settings.heading_size_tablet }}px;
+    --collections-heading-size-mobile: {{ section.settings.heading_size_mobile }}px;
+    --collections-heading-weight: {{ section.settings.heading_font_weight }};
+    --collections-heading-line-height: {{ section.settings.heading_line_height }};
+
+    --collections-description-font-family: {{ section.settings.description_font_family }};
+    --collections-description-color: rgba({{ section.settings.description_color.red }}, {{ section.settings.description_color.green }}, {{ section.settings.description_color.blue }}, {{ section.settings.description_alpha | divided_by: 100.0 }});
+    --collections-description-size-desktop: {{ section.settings.description_size_desktop }}px;
+    --collections-description-size-tablet: {{ section.settings.description_size_tablet }}px;
+    --collections-description-size-mobile: {{ section.settings.description_size_mobile }}px;
+    --collections-description-weight: {{ section.settings.description_font_weight }};
+
+    --collections-badge-font-family: {{ section.settings.badge_font_family }};
+    --collections-badge-color: {{ section.settings.badge_color }};
+    --collections-badge-bg: {{ section.settings.badge_background | default: 'transparent' }};
+    --collections-badge-border-color: {{ section.settings.badge_border_color }};
+    --collections-badge-size-desktop: {{ section.settings.badge_size_desktop }}px;
+    --collections-badge-size-tablet: {{ section.settings.badge_size_tablet }}px;
+    --collections-badge-size-mobile: {{ section.settings.badge_size_mobile }}px;
+    --collections-badge-weight: {{ section.settings.badge_font_weight }};
+    --collections-badge-letter-spacing: {{ section.settings.badge_letter_spacing }}em;
+    --collections-badge-transform: {{ section.settings.badge_text_transform }};
+
+    --collections-card-title-font-family: {{ section.settings.card_title_font_family }};
+    --collections-card-title-color: {{ section.settings.card_title_color }};
+    --collections-card-title-size-desktop: {{ section.settings.card_title_size_desktop }}px;
+    --collections-card-title-size-tablet: {{ section.settings.card_title_size_tablet }}px;
+    --collections-card-title-size-mobile: {{ section.settings.card_title_size_mobile }}px;
+    --collections-card-title-weight: {{ section.settings.card_title_font_weight }};
+
+    --collections-price-font-family: {{ section.settings.price_font_family }};
+    --collections-price-color: rgba({{ section.settings.price_color.red }}, {{ section.settings.price_color.green }}, {{ section.settings.price_color.blue }}, {{ section.settings.price_alpha | divided_by: 100.0 }});
+    --collections-price-size-desktop: {{ section.settings.price_size_desktop }}px;
+    --collections-price-size-tablet: {{ section.settings.price_size_tablet }}px;
+    --collections-price-size-mobile: {{ section.settings.price_size_mobile }}px;
+    --collections-price-weight: {{ section.settings.price_font_weight }};
+
+    --collections-button-font-family: {{ section.settings.button_font_family }};
+    --collections-button-color: {{ section.settings.button_color }};
+    --collections-button-size-desktop: {{ section.settings.button_size_desktop }}px;
+    --collections-button-size-tablet: {{ section.settings.button_size_tablet }}px;
+    --collections-button-size-mobile: {{ section.settings.button_size_mobile }}px;
+    --collections-button-weight: {{ section.settings.button_font_weight }};
+    --collections-button-letter-spacing: {{ section.settings.button_letter_spacing }}em;
+    --collections-button-transform: {{ section.settings.button_text_transform }};
+  }
+
+  {% if section.settings.section_background_image != blank %}
+    .collections-showcase-{{ section.id }} {
+      --collections-section-bg-image: url({{ section.settings.section_background_image | image_url: width: 2400 }});
+    }
+  {% endif %}
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.mobile_padding_top }}px;
+    padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="collections-showcase collections-showcase-{{ section.id }} section-{{ section.id }}-padding color-{{ section.settings.color_scheme }} gradient">
+  <div class="{{ container }}">
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.description != blank -%}
+      <div class="collections-showcase__header">
+        {%- if section.settings.eyebrow != blank -%}
+          <div class="collections-showcase__eyebrow">{{ section.settings.eyebrow }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <{{ heading_tag }} class="collections-showcase__heading">
+            {{ section.settings.heading }}
+          </{{ heading_tag }}>
+        {%- endif -%}
+
+        {%- if section.settings.description != blank -%}
+          <div class="collections-showcase__description rte">
+            {{ section.settings.description }}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="collections-showcase__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign card_collection = block.settings.collection
+          assign card_image = block.settings.image
+          if card_image == blank and card_collection != blank
+            assign card_image = card_collection.featured_image
+          endif
+
+          assign card_title = block.settings.title
+          if card_title == blank and card_collection != blank
+            assign card_title = card_collection.title
+          endif
+
+          assign card_link = block.settings.link
+          if card_link == blank and card_collection != blank
+            assign card_link = card_collection.url
+          endif
+          if card_link == blank
+            assign card_link = '#'
+          endif
+        -%}
+
+        <a class="collections-showcase__card" href="{{ card_link }}" {{ block.shopify_attributes }}>
+          <div class="collections-showcase__media">
+            {%- if card_image != blank -%}
+              {%- capture sizes -%}
+                (min-width: 990px) calc((100vw - 128px) / {{ section.settings.columns_desktop }}), (min-width: 750px) calc((100vw - 64px) / {{ section.settings.columns_tablet }}), calc(100vw / {{ section.settings.columns_mobile }})
+              {%- endcapture -%}
+              {{
+                card_image
+                | image_url: width: 1800
+                | image_tag:
+                  loading: 'lazy',
+                  sizes: sizes,
+                  widths: '360, 535, 720, 900, 1100, 1400, 1600, 1800'
+              }}
+            {%- else -%}
+              {{ 'collection-1' | placeholder_svg_tag: 'collections-showcase__placeholder' }}
+            {%- endif -%}
+          </div>
+          <div class="collections-showcase__overlay"></div>
+
+          <div class="collections-showcase__content">
+            {%- if block.settings.badge != blank -%}
+              <div class="collections-showcase__badge">{{ block.settings.badge }}</div>
+            {%- endif -%}
+
+            {%- if card_title != blank -%}
+              <h3 class="collections-showcase__title">{{ card_title }}</h3>
+            {%- endif -%}
+
+            {%- if block.settings.price_text != blank -%}
+              <div class="collections-showcase__price">{{ block.settings.price_text }}</div>
+            {%- endif -%}
+
+            {%- if block.settings.button_label != blank -%}
+              <div class="collections-showcase__button">
+                <span class="collections-showcase__button-text">{{ block.settings.button_label }}</span>
+                {%- if section.settings.show_button_arrow -%}
+                  <span aria-hidden="true">&rarr;</span>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collections",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Page width",
+      "default": "container-fluid",
+      "options": [
+        { "value": "container", "label": "Boxed" },
+        { "value": "container-fluid", "label": "Full width" },
+        { "value": "container-full", "label": "Full width no padding" }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "inverse"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "image_picker",
+      "id": "section_background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "header",
+      "content": "Header content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "OUR COLLECTIONS"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Safes for Every Lifestyle"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "default": "h2",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "div", "label": "div" },
+        { "value": "p", "label": "p" },
+        { "value": "span", "label": "span" }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>From entry-level elegance to ultra-luxury Rich Man Safes - each piece designed to elevate your living space.</p>"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_header_alignment",
+      "label": "Header alignment on mobile",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "header_width",
+      "min": 320,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 640,
+      "label": "Header max width"
+    },
+    {
+      "type": "range",
+      "id": "header_gap_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 52,
+      "label": "Header bottom spacing desktop"
+    },
+    {
+      "type": "range",
+      "id": "header_gap_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 30,
+      "label": "Header bottom spacing mobile"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "Columns on desktop"
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "label": "Columns on tablet"
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1,
+      "label": "Columns on mobile"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 2,
+      "label": "Gap desktop"
+    },
+    {
+      "type": "range",
+      "id": "gap_tablet",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 2,
+      "label": "Gap tablet"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "label": "Gap mobile"
+    },
+    {
+      "type": "range",
+      "id": "card_height_desktop",
+      "min": 360,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 660,
+      "label": "Card height desktop"
+    },
+    {
+      "type": "range",
+      "id": "card_height_tablet",
+      "min": 320,
+      "max": 760,
+      "step": 10,
+      "unit": "px",
+      "default": 520,
+      "label": "Card height tablet"
+    },
+    {
+      "type": "range",
+      "id": "card_height_mobile",
+      "min": 280,
+      "max": 680,
+      "step": 10,
+      "unit": "px",
+      "default": 440,
+      "label": "Card height mobile"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_desktop",
+      "min": 10,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "label": "Card content padding desktop"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_mobile",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Card content padding mobile"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Card corner radius"
+    },
+    {
+      "type": "color_background",
+      "id": "card_overlay_gradient",
+      "label": "Card overlay gradient",
+      "default": "linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.74) 100%)"
+    },
+    {
+      "type": "header",
+      "content": "Eyebrow typography"
+    },
+    {
+      "type": "select",
+      "id": "eyebrow_font_family",
+      "label": "Font family",
+      "default": "var(--font-body-family)",
+      "options": [
+        { "value": "var(--font-body-family)", "label": "Body" },
+        { "value": "var(--font-heading-family)", "label": "Heading" },
+        { "value": "var(--font-accent-family)", "label": "Accent" },
+        { "value": "var(--font-display-family)", "label": "Display" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Color",
+      "default": "#777777"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_desktop",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "label": "Font size desktop"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_tablet",
+      "min": 10,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 13,
+      "label": "Font size tablet"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_mobile",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "label": "Font size mobile"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_font_weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 600,
+      "label": "Font weight"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_letter_spacing",
+      "min": 0,
+      "max": 0.5,
+      "step": 0.1,
+      "default": 0.2,
+      "label": "Letter spacing"
+    },
+    {
+      "type": "select",
+      "id": "eyebrow_text_transform",
+      "label": "Text transform",
+      "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Heading typography"
+    },
+    {
+      "type": "select",
+      "id": "heading_font_family",
+      "label": "Font family",
+      "default": "var(--font-heading-family)",
+      "options": [
+        { "value": "var(--font-heading-family)", "label": "Heading" },
+        { "value": "var(--font-body-family)", "label": "Body" },
+        { "value": "var(--font-accent-family)", "label": "Accent" },
+        { "value": "var(--font-display-family)", "label": "Display" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color",
+      "default": "#1d1d1d"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "min": 18,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 52,
+      "label": "Font size desktop"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_tablet",
+      "min": 18,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 46,
+      "label": "Font size tablet"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 18,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 32,
+      "label": "Font size mobile"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "label": "Font weight"
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.1,
+      "label": "Line height"
+    },
+    {
+      "type": "header",
+      "content": "Description typography"
+    },
+    {
+      "type": "select",
+      "id": "description_font_family",
+      "label": "Font family",
+      "default": "var(--font-body-family)",
+      "options": [
+        { "value": "var(--font-body-family)", "label": "Body" },
+        { "value": "var(--font-heading-family)", "label": "Heading" },
+        { "value": "var(--font-accent-family)", "label": "Accent" },
+        { "value": "var(--font-display-family)", "label": "Display" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color",
+      "default": "#8a8a8a"
+    },
+    {
+      "type": "range",
+      "id": "description_alpha",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "label": "Color alpha"
+    },
+    {
+      "type": "range",
+      "id": "description_size_desktop",
+      "min": 10,
+      "max": 42,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "label": "Font size desktop"
+    },
+    {
+      "type": "range",
+      "id": "description_size_tablet",
+      "min": 10,
+      "max": 38,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "label": "Font size tablet"
+    },
+    {
+      "type": "range",
+      "id": "description_size_mobile",
+      "min": 10,
+      "max": 34,
+      "step": 1,
+      "unit": "px",
+      "default": 15,
+      "label": "Font size mobile"
+    },
+    {
+      "type": "range",
+      "id": "description_font_weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400,
+      "label": "Font weight"
+    },
+    {
+      "type": "header",
+      "content": "Badge typography"
+    },
+    {
+      "type": "select",
+      "id": "badge_font_family",
+      "label": "Font family",
+      "default": "var(--font-body-family)",
+      "options": [
+        { "value": "var(--font-body-family)", "label": "Body" },
+        { "value": "var(--font-heading-family)", "label": "Heading" },
+        { "value": "var(--font-accent-family)", "label": "Accent" },
+        { "value": "var(--font-display-family)", "label": "Display" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge text color",
+      "default": "#d6b257"
+    },
+    {
+      "type": "color_background",
+      "id": "badge_background",
+      "label": "Badge background"
+    },
+    {
+      "type": "color",
+      "id": "badge_border_color",
+      "label": "Badge border color",
+      "default": "#9f7e2f"
+    },
+    {
+      "type": "range",
+      "id": "badge_size_desktop",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "label": "Font size desktop"
+    },
+    {
+      "type": "range",
+      "id": "badge_size_tablet",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "label": "Font size tablet"
+    },
+    {
+      "type": "range",
+      "id": "badge_size_mobile",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 11,
+      "label": "Font size mobile"
+    },
+    {
+      "type": "range",
+      "id": "badge_font_weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "label": "Font weight"
+    },
+    {
+      "type": "range",
+      "id": "badge_letter_spacing",
+      "min": 0,
+      "max": 0.5,
+      "step": 0.1,
+      "default": 0.2,
+      "label": "Letter spacing"
+    },
+    {
+      "type": "select",
+      "id": "badge_text_transform",
+      "label": "Text transform",
+      "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Card title typography"
+    },
+    {
+      "type": "select",
+      "id": "card_title_font_family",
+      "label": "Font family",
+      "default": "var(--font-heading-family)",
+      "options": [
+        { "value": "var(--font-heading-family)", "label": "Heading" },
+        { "value": "var(--font-body-family)", "label": "Body" },
+        { "value": "var(--font-accent-family)", "label": "Accent" },
+        { "value": "var(--font-display-family)", "label": "Display" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_desktop",
+      "min": 14,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 28,
+      "label": "Font size desktop"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_tablet",
+      "min": 14,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 28,
+      "label": "Font size tablet"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_mobile",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "label": "Font size mobile"
+    },
+    {
+      "type": "range",
+      "id": "card_title_font_weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400,
+      "label": "Font weight"
+    },
+    {
+      "type": "header",
+      "content": "Price typography"
+    },
+    {
+      "type": "select",
+      "id": "price_font_family",
+      "label": "Font family",
+      "default": "var(--font-body-family)",
+      "options": [
+        { "value": "var(--font-body-family)", "label": "Body" },
+        { "value": "var(--font-heading-family)", "label": "Heading" },
+        { "value": "var(--font-accent-family)", "label": "Accent" },
+        { "value": "var(--font-display-family)", "label": "Display" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "price_alpha",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 72,
+      "label": "Color alpha"
+    },
+    {
+      "type": "range",
+      "id": "price_size_desktop",
+      "min": 10,
+      "max": 38,
+      "step": 1,
+      "unit": "px",
+      "default": 15,
+      "label": "Font size desktop"
+    },
+    {
+      "type": "range",
+      "id": "price_size_tablet",
+      "min": 10,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 15,
+      "label": "Font size tablet"
+    },
+    {
+      "type": "range",
+      "id": "price_size_mobile",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "label": "Font size mobile"
+    },
+    {
+      "type": "range",
+      "id": "price_font_weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400,
+      "label": "Font weight"
+    },
+    {
+      "type": "header",
+      "content": "Button typography"
+    },
+    {
+      "type": "select",
+      "id": "button_font_family",
+      "label": "Font family",
+      "default": "var(--font-body-family)",
+      "options": [
+        { "value": "var(--font-body-family)", "label": "Body" },
+        { "value": "var(--font-heading-family)", "label": "Heading" },
+        { "value": "var(--font-accent-family)", "label": "Accent" },
+        { "value": "var(--font-display-family)", "label": "Display" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_size_desktop",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 11,
+      "label": "Font size desktop"
+    },
+    {
+      "type": "range",
+      "id": "button_size_tablet",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 11,
+      "label": "Font size tablet"
+    },
+    {
+      "type": "range",
+      "id": "button_size_mobile",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 11,
+      "label": "Font size mobile"
+    },
+    {
+      "type": "range",
+      "id": "button_font_weight",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 700,
+      "label": "Font weight"
+    },
+    {
+      "type": "range",
+      "id": "button_letter_spacing",
+      "min": 0,
+      "max": 0.5,
+      "step": 0.1,
+      "default": 0.1,
+      "label": "Letter spacing"
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "Text transform",
+      "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_arrow",
+      "label": "Show button arrow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80,
+      "label": "Padding top"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80,
+      "label": "Padding bottom"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "label": "Mobile padding top"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "label": "Mobile padding bottom"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge",
+          "default": "ENTRY LEVEL SAFE"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "price_text",
+          "label": "Price text",
+          "default": "From $399"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Explore collection"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collections",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}
