@@ -1,0 +1,523 @@
+{%- liquid
+  assign container = ''
+  if section.settings.container == 'container'
+    assign container = 'container'
+  elsif section.settings.container == 'container-fluid'
+    assign container = 'container-fluid'
+  else
+    assign container = 'container-fluid px-0'
+  endif
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.mobile_padding_top }}px;
+    padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+  }
+
+  .section-{{ section.id }} {
+    background: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+  }
+
+  .section-{{ section.id }} .featured-safe-spotlight__eyebrow,
+  .section-{{ section.id }} .featured-safe-spotlight__price,
+  .section-{{ section.id }} .featured-safe-spotlight__feature::before {
+    color: {{ section.settings.accent_color }};
+  }
+
+  .section-{{ section.id }} .featured-safe-spotlight__button {
+    background: {{ section.settings.button_background }};
+    color: {{ section.settings.button_text_color }};
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section class="section-{{ section.id }} featured-safe-spotlight section-{{ section.id }}-padding">
+  <div class="{{ container }}">
+    <div class="featured-safe-spotlight__grid featured-safe-spotlight__grid--{{ section.settings.layout }}">
+      <div class="featured-safe-spotlight__media">
+        {%- if section.settings.image != blank -%}
+          {%- liquid
+            assign image_height = section.settings.image.width | divided_by: section.settings.image.aspect_ratio
+          -%}
+          {{
+            section.settings.image
+            | image_url: width: 1800
+            | image_tag:
+              loading: 'lazy',
+              width: section.settings.image.width,
+              height: image_height,
+              widths: '375, 550, 750, 990, 1200, 1500, 1800',
+              sizes: '(min-width: 1200px) 56vw, (min-width: 750px) 50vw, 100vw',
+              class: 'featured-safe-spotlight__image',
+              alt: section.settings.image.alt
+          }}
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg featured-safe-spotlight__placeholder' }}
+        {%- endif -%}
+      </div>
+
+      <div class="featured-safe-spotlight__content">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="featured-safe-spotlight__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="featured-safe-spotlight__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.description != blank -%}
+          <div class="featured-safe-spotlight__description rte">{{ section.settings.description }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.price != blank -%}
+          <div class="featured-safe-spotlight__price-wrap">
+            <span class="featured-safe-spotlight__price">{{ section.settings.price | escape }}</span>
+            {%- if section.settings.currency != blank -%}
+              <span class="featured-safe-spotlight__currency">{{ section.settings.currency | escape }}</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.blocks.size > 0 -%}
+          <ul class="featured-safe-spotlight__features" role="list">
+            {%- for block in section.blocks -%}
+              {%- if block.settings.text != blank -%}
+                <li class="featured-safe-spotlight__feature" {{ block.shopify_attributes }}>
+                  {{ block.settings.text | escape }}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        {%- if section.settings.button_label != blank -%}
+          <a
+            class="featured-safe-spotlight__button"
+            {% if section.settings.button_link == blank %}
+              role="link" aria-disabled="true"
+            {% else %}
+              href="{{ section.settings.button_link }}"
+            {% endif %}
+          >
+            {{ section.settings.button_label | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .featured-safe-spotlight {
+    overflow: hidden;
+  }
+
+  .featured-safe-spotlight__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+    align-items: center;
+  }
+
+  .featured-safe-spotlight__media {
+    min-height: 320px;
+    overflow: hidden;
+    background: #2b2925;
+  }
+
+  .featured-safe-spotlight__image,
+  .featured-safe-spotlight__placeholder {
+    display: block;
+    width: 100%;
+    min-height: inherit;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .featured-safe-spotlight__content {
+    max-width: 690px;
+  }
+
+  .featured-safe-spotlight__eyebrow {
+    margin: 0 0 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .featured-safe-spotlight__heading {
+    max-width: 600px;
+    margin: 0;
+    color: currentColor;
+    font-size: clamp(38px, 4vw, 64px);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .featured-safe-spotlight__description {
+    max-width: 680px;
+    margin-top: 22px;
+    color: rgba(255, 255, 255, 0.52);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .featured-safe-spotlight__price-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 44px;
+  }
+
+  .featured-safe-spotlight__price {
+    font-family: var(--heading-global-family, var(--font-heading-family));
+    font-size: clamp(34px, 3.3vw, 52px);
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .featured-safe-spotlight__currency {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .featured-safe-spotlight__features {
+    display: grid;
+    gap: 0;
+    max-width: 700px;
+    margin: 48px 0 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .featured-safe-spotlight__feature {
+    position: relative;
+    padding: 14px 0 14px 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  .featured-safe-spotlight__feature::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 20px;
+    height: 1px;
+    background: currentColor;
+    transform: translateY(-50%);
+  }
+
+  .featured-safe-spotlight__button {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    padding: 14px 34px;
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 1.6px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .featured-safe-spotlight__button:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  @media screen and (min-width: 990px) {
+    .featured-safe-spotlight__grid {
+      grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
+      gap: clamp(54px, 5vw, 96px);
+    }
+
+    .featured-safe-spotlight__grid--text_first {
+      grid-template-columns: minmax(420px, 0.92fr) minmax(0, 1.08fr);
+    }
+
+    .featured-safe-spotlight__grid--text_first .featured-safe-spotlight__media {
+      order: 2;
+    }
+
+    .featured-safe-spotlight__media {
+      min-height: 620px;
+    }
+  }
+
+  @media screen and (min-width: 1400px) {
+    .featured-safe-spotlight__media {
+      min-height: 760px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .featured-safe-spotlight__grid {
+      gap: 28px;
+    }
+
+    .featured-safe-spotlight__content {
+      padding: 0 15px;
+    }
+
+    .featured-safe-spotlight__eyebrow {
+      font-size: 11px;
+      letter-spacing: 2.5px;
+    }
+
+    .featured-safe-spotlight__description,
+    .featured-safe-spotlight__feature {
+      font-size: 14px;
+    }
+
+    .featured-safe-spotlight__price-wrap,
+    .featured-safe-spotlight__features,
+    .featured-safe-spotlight__button {
+      margin-top: 28px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Featured safe spotlight",
+  "tag": "section",
+  "class": "spaced-section spaced-section--full-width",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Page width",
+      "default": "container",
+      "options": [
+        {
+          "value": "container",
+          "label": "Boxed"
+        },
+        {
+          "value": "container-fluid",
+          "label": "Full width"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "image_first",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "Image first"
+        },
+        {
+          "value": "text_first",
+          "label": "Text first"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Entry level - most popular"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Sentinel Safe"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Our best-selling safe under $1,000. Bigger storage, premium leather interior, and enhanced protection - exceptional value for everyday security needs.</p>"
+    },
+    {
+      "type": "text",
+      "id": "price",
+      "label": "Price",
+      "default": "$599 - $799"
+    },
+    {
+      "type": "text",
+      "id": "currency",
+      "label": "Currency",
+      "default": "SGD"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop the Sentinel"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#1a1a19"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#f5f2ee"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#c7a34b"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#d91f2f"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "paragraph",
+      "content": "Desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 180,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 180,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 90
+    },
+    {
+      "type": "paragraph",
+      "content": "Mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 55
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Premium leather interior lining"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured safe spotlight",
+      "category": "Product",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "text": "Premium leather interior lining"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "text": "Enhanced anti-theft door mechanism"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "text": "Spacious multi-shelf storage"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "text": "Digital keypad + backup key"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "text": "24-hour delivery, 2-year warranty"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

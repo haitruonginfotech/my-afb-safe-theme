@@ -1,15 +1,7 @@
-{{ 'component-modal-video.css' | asset_url | stylesheet_tag }}
-{{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
-
 {%- liquid
   assign video_id = section.settings.video.id | default: section.settings.video_url.id
   assign poster = section.settings.cover_image | default: section.settings.video.preview_image
   assign video_alt = section.settings.video.alt | default: section.settings.video_description | default: section.settings.heading
-  assign alt = 'sections.video.load_video' | t: description: video_alt | escape
-  assign has_video = false
-  if section.settings.video != blank or section.settings.video_url != blank
-    assign has_video = true
-  endif
 -%}
 
 {%- style -%}
@@ -25,8 +17,7 @@
 
   .section-{{ section.id }} .product-catalogue-video__eyebrow,
   .section-{{ section.id }} .product-catalogue-video__accent,
-  .section-{{ section.id }} .product-catalogue-video__meta,
-  .section-{{ section.id }} .product-catalogue-video__search-label {
+  .section-{{ section.id }} .product-catalogue-video__meta {
     color: {{ section.settings.accent_color }};
   }
 
@@ -63,132 +54,118 @@
     </div>
 
     <div class="product-catalogue-video__frame">
-      <modal-opener class="product-catalogue-video__opener no-js-hidden" {% if has_video %}data-modal="#PopupModal-{{ section.id }}"{% endif %}>
-        <button
-          class="product-catalogue-video__poster"
-          type="button"
-          aria-label="{{ alt }}"
-          {% if has_video %}aria-haspopup="dialog"{% endif %}
-          {% unless has_video %}aria-disabled="true"{% endunless %}
-          {% unless has_video %}disabled{% endunless %}
-          data-media-id="{{ video_id }}"
-        >
-          <span class="product-catalogue-video__media">
-            {%- if poster != blank -%}
-              {{
-                poster
-                | image_url: width: 2400
-                | image_tag:
-                  loading: 'lazy',
-                  widths: '375, 550, 750, 990, 1200, 1500, 1800, 2200, 2400',
-                  sizes: '(min-width: 1200px) 1200px, 100vw',
-                  class: 'product-catalogue-video__image',
-                  alt: poster.alt
-              }}
-            {%- else -%}
-              {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg product-catalogue-video__placeholder' }}
-            {%- endif -%}
-          </span>
-
-          <span class="product-catalogue-video__shade" aria-hidden="true"></span>
-
-          {%- if section.settings.logo != blank -%}
-            <span class="product-catalogue-video__logo-wrap">
-              {{
-                section.settings.logo
-                | image_url: width: 220
-                | image_tag:
-                  loading: 'lazy',
-                  widths: '90, 140, 180, 220',
-                  class: 'product-catalogue-video__logo',
-                  alt: section.settings.logo.alt
-              }}
-            </span>
+      <div class="product-catalogue-video__poster" aria-label="{{ video_alt | escape }}">
+        <span class="product-catalogue-video__media">
+          {%- if section.settings.video_url.type == 'youtube' -%}
+            <iframe
+              class="product-catalogue-video__inline-video"
+              src="https://www.youtube.com/embed/{{ video_id }}?playsinline=1&rel=0&controls=0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              title="{{ section.settings.video_description | escape }}"
+            ></iframe>
+          {%- elsif section.settings.video_url.type == 'vimeo' -%}
+            <iframe
+              class="product-catalogue-video__inline-video"
+              src="https://player.vimeo.com/video/{{ video_id }}?controls=0"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowfullscreen
+              title="{{ section.settings.video_description | escape }}"
+            ></iframe>
+          {%- elsif section.settings.video != blank -%}
+            {{
+              section.settings.video
+              | video_tag:
+                image_size: '2400x',
+                controls: false,
+                playsinline: true,
+                muted: false,
+                loop: section.settings.enable_video_looping,
+                class: 'product-catalogue-video__inline-video'
+            }}
+          {%- elsif poster != blank -%}
+            {{
+              poster
+              | image_url: width: 2400
+              | image_tag:
+                loading: 'lazy',
+                widths: '375, 550, 750, 990, 1200, 1500, 1800, 2200, 2400',
+                sizes: '(min-width: 1200px) 1200px, 100vw',
+                class: 'product-catalogue-video__image',
+                alt: poster.alt
+            }}
+          {%- else -%}
+            {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg product-catalogue-video__placeholder' }}
           {%- endif -%}
+        </span>
 
-          {%- if has_video -%}
-            <span class="product-catalogue-video__play" aria-hidden="true">
-              <span class="product-catalogue-video__play-icon"></span>
-            </span>
-          {%- endif -%}
+        <span class="product-catalogue-video__shade" aria-hidden="true"></span>
 
-          <span class="product-catalogue-video__collection">
-            {%- if section.settings.meta_label != blank -%}
-              <span class="product-catalogue-video__meta">{{ section.settings.meta_label | escape }}</span>
-            {%- endif -%}
-            {%- if section.settings.catalogue_title != blank -%}
-              <span class="product-catalogue-video__catalogue-title">{{ section.settings.catalogue_title | escape }}</span>
-            {%- endif -%}
-            {%- if section.settings.collection_title != blank -%}
-              <span class="product-catalogue-video__accent">{{ section.settings.collection_title | escape }}</span>
-            {%- endif -%}
-          </span>
-
-          {%- if section.settings.search_label != blank or section.settings.search_text != blank -%}
-            <span class="product-catalogue-video__search">
-              {%- if section.settings.search_label != blank -%}
-                <span class="product-catalogue-video__search-label">{{ section.settings.search_label | escape }}</span>
-              {%- endif -%}
-              {%- if section.settings.search_text != blank -%}
-                <span class="product-catalogue-video__search-text">{{ section.settings.search_text | escape }}</span>
-              {%- endif -%}
-              <span class="product-catalogue-video__search-icon" aria-hidden="true"></span>
-            </span>
-          {%- endif -%}
-        </button>
-      </modal-opener>
-
-      <noscript>
-        {%- if section.settings.video_url != blank -%}
-          <a class="product-catalogue-video__poster" href="{{ section.settings.video_url }}">
-            <span class="product-catalogue-video__media">
-              {%- if poster != blank -%}
-                {{ poster | image_url: width: 1500 | image_tag: loading: 'lazy', class: 'product-catalogue-video__image', alt: poster.alt }}
-              {%- else -%}
-                {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg product-catalogue-video__placeholder' }}
-              {%- endif -%}
-            </span>
-          </a>
+        {%- if section.settings.video != blank or section.settings.video_url != blank -%}
+          <button class="product-catalogue-video__play" type="button" aria-label="{{ 'sections.video.load_video' | t: description: video_alt | escape }}">
+            <span class="product-catalogue-video__play-icon" aria-hidden="true"></span>
+          </button>
         {%- endif -%}
-      </noscript>
 
-      {%- if has_video -%}
-        <modal-dialog id="PopupModal-{{ section.id }}" class="modal-video media-modal color-{{ settings.color_schemes | first }}">
-          <div class="modal-video__content" role="dialog" aria-label="{{ section.settings.video_description | escape }}" aria-modal="true" tabindex="-1">
-            <button id="ModalClose-{{ section.id }}" type="button" class="modal-video__toggle" aria-label="{{ 'accessibility.close' | t }}">
-              {% render 'icon-close' %}
-            </button>
-            <div class="modal-video__content-info">
-              <deferred-media class="modal-video__video template-popup">
-                <template>
-                  {%- if section.settings.video_url.type == 'youtube' -%}
-                    <iframe
-                      src="https://www.youtube.com/embed/{{ video_id }}?enablejsapi=1"
-                      class="js-youtube"
-                      allow="autoplay; encrypted-media"
-                      allowfullscreen
-                      title="{{ section.settings.video_description | escape }}"
-                    ></iframe>
-                  {%- elsif section.settings.video_url.type == 'vimeo' -%}
-                    <iframe
-                      src="https://player.vimeo.com/video/{{ video_id }}"
-                      class="js-vimeo"
-                      allow="autoplay; encrypted-media"
-                      allowfullscreen
-                      title="{{ section.settings.video_description | escape }}"
-                    ></iframe>
-                  {%- elsif section.settings.video != blank -%}
-                    {{ section.settings.video | video_tag: image_size: '1600x', autoplay: true, controls: true, muted: false }}
-                  {%- endif -%}
-                </template>
-              </deferred-media>
-            </div>
-          </div>
-        </modal-dialog>
-      {%- endif -%}
+        {%- if section.settings.logo != blank -%}
+          <span class="product-catalogue-video__logo-wrap">
+            {{
+              section.settings.logo
+              | image_url: width: 220
+              | image_tag:
+                loading: 'lazy',
+                widths: '90, 140, 180, 220',
+                class: 'product-catalogue-video__logo',
+                alt: section.settings.logo.alt
+            }}
+          </span>
+        {%- endif -%}
+
+        <span class="product-catalogue-video__collection">
+          {%- if section.settings.meta_label != blank -%}
+            <span class="product-catalogue-video__meta">{{ section.settings.meta_label | escape }}</span>
+          {%- endif -%}
+          {%- if section.settings.catalogue_title != blank -%}
+            <span class="product-catalogue-video__catalogue-title">{{ section.settings.catalogue_title | escape }}</span>
+          {%- endif -%}
+          {%- if section.settings.collection_title != blank -%}
+            <span class="product-catalogue-video__accent">{{ section.settings.collection_title | escape }}</span>
+          {%- endif -%}
+        </span>
+      </div>
     </div>
   </div>
 </section>
+
+<script>
+  (() => {
+    const section = document.currentScript.previousElementSibling;
+    const playButton = section?.querySelector('.product-catalogue-video__play');
+
+    if (!playButton) return;
+
+    playButton.addEventListener('click', () => {
+      const frame = playButton.closest('.product-catalogue-video__poster');
+      const video = frame?.querySelector('video');
+      const iframe = frame?.querySelector('iframe');
+
+      frame?.classList.add('is-playing');
+
+      if (video) {
+        video.setAttribute('controls', 'controls');
+        video.play();
+        return;
+      }
+
+      if (iframe) {
+        const url = new URL(iframe.src);
+        url.searchParams.set('autoplay', '1');
+        url.searchParams.set('controls', '1');
+        iframe.src = url.toString();
+      }
+    });
+  })();
+</script>
 
 <style>
   .product-catalogue-video {
@@ -230,10 +207,6 @@
     width: 100%;
   }
 
-  .product-catalogue-video__opener {
-    display: block;
-  }
-
   .product-catalogue-video__poster {
     position: relative;
     display: block;
@@ -248,14 +221,6 @@
     isolation: isolate;
   }
 
-  .product-catalogue-video__poster[aria-disabled="true"] {
-    cursor: default;
-  }
-
-  .product-catalogue-video__poster:disabled {
-    cursor: default;
-  }
-
   .product-catalogue-video__media {
     display: block;
     position: relative;
@@ -264,12 +229,18 @@
   }
 
   .product-catalogue-video__image,
+  .product-catalogue-video__inline-video,
   .product-catalogue-video__placeholder {
     display: block;
     width: 100%;
     height: 100%;
     min-height: inherit;
     object-fit: cover;
+  }
+
+  .product-catalogue-video__inline-video {
+    border: 0;
+    background: #000;
   }
 
   .product-catalogue-video__shade {
@@ -288,6 +259,7 @@
     left: clamp(18px, 5vw, 64px);
     z-index: 2;
     max-width: 96px;
+    pointer-events: none;
   }
 
   .product-catalogue-video__logo {
@@ -300,22 +272,30 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     width: 58px;
     height: 58px;
     align-items: center;
     justify-content: center;
+    padding: 0;
+    border: 0;
     border-radius: 50%;
     background: rgba(31, 31, 31, 0.48);
     color: #fff;
     transform: translate(-50%, -50%);
-    transition: background 0.25s ease, transform 0.25s ease;
+    transition: background 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
   }
 
-  .product-catalogue-video__poster:hover .product-catalogue-video__play {
+  .product-catalogue-video__play:hover,
+  .product-catalogue-video__play:focus-visible {
     background: rgba(31, 31, 31, 0.68);
     transform: translate(-50%, -50%) scale(1.04);
+  }
+
+  .product-catalogue-video__poster.is-playing .product-catalogue-video__play {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .product-catalogue-video__play-icon {
@@ -335,6 +315,7 @@
     display: grid;
     gap: 2px;
     max-width: min(420px, calc(100% - 40px));
+    pointer-events: none;
   }
 
   .product-catalogue-video__meta {
@@ -357,57 +338,6 @@
     font-style: italic;
   }
 
-  .product-catalogue-video__search {
-    position: absolute;
-    right: clamp(20px, 5vw, 74px);
-    bottom: clamp(18px, 4vw, 38px);
-    z-index: 2;
-    display: inline-flex;
-    max-width: min(360px, calc(100% - 40px));
-    min-height: 28px;
-    align-items: center;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.42);
-    border-radius: 999px;
-    background: rgba(82, 76, 69, 0.58);
-    font-size: 11px;
-    line-height: 1.2;
-    white-space: nowrap;
-  }
-
-  .product-catalogue-video__search-label {
-    padding: 6px 10px 6px 12px;
-    background: rgba(238, 238, 238, 0.88);
-    color: #333;
-  }
-
-  .product-catalogue-video__search-text {
-    padding: 6px 10px;
-    color: #fff;
-  }
-
-  .product-catalogue-video__search-icon {
-    position: relative;
-    width: 14px;
-    height: 14px;
-    margin-right: 10px;
-    border: 1.5px solid currentColor;
-    border-radius: 50%;
-    color: #fff;
-    flex: 0 0 auto;
-  }
-
-  .product-catalogue-video__search-icon::after {
-    content: "";
-    position: absolute;
-    right: -4px;
-    bottom: -3px;
-    width: 6px;
-    height: 1.5px;
-    background: currentColor;
-    transform: rotate(45deg);
-  }
-
   @media screen and (max-width: 749px) {
     .product-catalogue-video__intro {
       padding: 0 15px 24px;
@@ -426,15 +356,8 @@
       height: 48px;
     }
 
-    .product-catalogue-video__search {
-      right: auto;
-      left: 20px;
-      bottom: 16px;
-      max-width: calc(100% - 40px);
-    }
-
     .product-catalogue-video__collection {
-      bottom: 64px;
+      bottom: 26px;
     }
   }
 </style>
@@ -504,6 +427,12 @@
       "label": "Shopify-hosted video"
     },
     {
+      "type": "checkbox",
+      "id": "enable_video_looping",
+      "label": "Loop Shopify-hosted video",
+      "default": false
+    },
+    {
       "type": "video_url",
       "id": "video_url",
       "accept": ["youtube", "vimeo"],
@@ -532,18 +461,6 @@
       "id": "collection_title",
       "label": "Collection title",
       "default": "2026 Collection"
-    },
-    {
-      "type": "text",
-      "id": "search_label",
-      "label": "Search label",
-      "default": "AIFEIBAO"
-    },
-    {
-      "type": "text",
-      "id": "search_text",
-      "label": "Search text",
-      "default": "艾斐堡 - 高端智能保险柜"
     },
     {
       "type": "range",
